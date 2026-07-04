@@ -103,12 +103,12 @@ SELECT
 FROM raw.olist_order_payments_dataset;
 
 SELECT
-COUNT(*) total_rows,
-COUNT(review_id),
-COUNT(order_id),
-COUNT(review_score),
-COUNT(review_comment_title),
-COUNT(review_comment_message),
-COUNT(review_creation_date),
-COUNT(review_answer_timestamp)
+  COUNT(*) total_rows,
+  COUNT(review_id),
+  COUNT(order_id),
+  COUNT(review_score),
+  COUNT(review_comment_title),
+  COUNT(review_comment_message),
+  COUNT(review_creation_date),
+  COUNT(review_answer_timestamp)
 FROM raw.olist_order_reviews_dataset;
