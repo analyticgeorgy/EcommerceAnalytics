@@ -17,3 +17,7 @@ MISSING VALUES
 -The raw.olist_order_items_dataset has no missing values.
 -The raw.olist_order_payments_dataset has no missing values.
 -The raw.olist_order_reviews_dataset has no missing values.
+-The raw.olist_orders_dataset has no missing values.
+-The raw.olist_products_dataset has one NULL in the columns : product_name_length, product_description_length and the product_photos_qty.
+-The raw.olist_sellers_dataset has no missing values.
+-The raw.product_category_name_translation has no missing values.
