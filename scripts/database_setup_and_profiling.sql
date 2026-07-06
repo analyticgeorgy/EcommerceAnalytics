@@ -112,3 +112,42 @@ SELECT
   COUNT(review_creation_date),
   COUNT(review_answer_timestamp)
 FROM raw.olist_order_reviews_dataset;
+
+SELECT
+  COUNT(*) total_rows,
+  COUNT(order_id),
+  COUNT(customer_id),
+  COUNT(order_status),
+  COUNT(order_purchase_timestamp),
+  COUNT(order_approved_at),
+  COUNT(order_delivered_carrier_date),
+  COUNT(order_delivered_customer_date),
+  COUNT(order_estimated_delivery_date)
+FROM raw.olist_orders_dataset;
+
+SELECT
+  COUNT(*) total_rows,
+  COUNT(product_id),
+  COUNT(product_category_name),
+  COUNT(product_name_length),
+  COUNT(product_description_length),
+  COUNT(product_photos_qty),
+  COUNT(product_weight_g),
+  COUNT(product_length_cm),
+  COUNT(product_height_cm),
+  COUNT(product_width_cm)
+FROM raw.olist_products_dataset;
+
+SELECT
+  COUNT(*) total_rows,
+  COUNT(seller_id),
+  COUNT(seller_zip_code_prefix),
+  COUNT(seller_city),
+  COUNT(seller_state)
+FROM raw.olist_sellers_dataset;
+
+SELECT
+  COUNT(*) total_rows,
+  COUNT(product_category_name),
+  COUNT(product_category_name_english)
+FROM raw.product_category_name_translation;
