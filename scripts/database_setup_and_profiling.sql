@@ -151,3 +151,57 @@ SELECT
   COUNT(product_category_name),
   COUNT(product_category_name_english)
 FROM raw.product_category_name_translation;
+
+--Stage 3 : Duplicate Primary Keys
+SELECT
+  customer_id,
+  COUNT(*) occurrences
+FROM raw.olist_customers_dataset
+GROUP BY customer_id
+HAVING COUNT(*) > 1;
+
+SELECT
+  order_id,
+  product_id,
+  seller_id,
+  COUNT(*) occurrences
+FROM raw.olist_order_items_dataset
+GROUP BY order_id, product_id, seller_id
+HAVING COUNT(*) > 1;
+
+SELECT
+  order_id,
+  COUNT(*) occurrences
+FROM raw.olist_order_payments_dataset
+GROUP BY order_id
+HAVING COUNT(*) > 1;
+
+SELECT
+  review_id,
+  order_id,
+  COUNT(*) occurrences
+FROM raw.olist_order_reviews_dataset
+GROUP BY review_id, order_id
+HAVING COUNT(*) > 1;
+
+SELECT
+  order_id,
+  COUNT(*) occurrences
+FROM raw.olist_orders_dataset
+GROUP BY order_id
+HAVING COUNT(*) > 1;
+
+SELECT
+  product_id,
+  COUNT(*) occurrences
+FROM raw.olist_products_dataset
+GROUP BY product_id
+HAVING COUNT(*) > 1;
+
+SELECT
+seller_id,
+COUNT(*) occurrences
+FROM raw.olist_sellers_dataset
+GROUP BY seller_id
+HAVING COUNT(*) > 1;
+
