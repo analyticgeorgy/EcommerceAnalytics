@@ -152,7 +152,7 @@ SELECT
   COUNT(product_category_name_english)
 FROM raw.product_category_name_translation;
 
---Stage 3 : Duplicate Primary Keys
+--Stage 3 : Duplicate Keys
 SELECT
   customer_id,
   COUNT(*) occurrences
@@ -162,18 +162,19 @@ HAVING COUNT(*) > 1;
 
 SELECT
   order_id,
-  product_id,
-  seller_id,
+  order_item_id,
   COUNT(*) occurrences
 FROM raw.olist_order_items_dataset
-GROUP BY order_id, product_id, seller_id
+GROUP BY order_id, order_item_id
 HAVING COUNT(*) > 1;
 
+  
 SELECT
   order_id,
+  payment_sequential,
   COUNT(*) occurrences
 FROM raw.olist_order_payments_dataset
-GROUP BY order_id
+GROUP BY order_id, payment_sequential
 HAVING COUNT(*) > 1;
 
 SELECT
@@ -204,4 +205,6 @@ COUNT(*) occurrences
 FROM raw.olist_sellers_dataset
 GROUP BY seller_id
 HAVING COUNT(*) > 1;
+
+--Stage 3 : Referential Integrity
 
