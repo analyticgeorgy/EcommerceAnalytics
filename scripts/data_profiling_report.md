@@ -41,4 +41,19 @@ We will be asking questions like these:
 -Does every order_id in olist_order_reviews_dataset exist in olist_orders_dataset.
 -Does every product_id in olist_order_items_dataset exist in olist_products_dataset.
 -Does every seller_id in olist_order_items_dataset exist in olist_sellers_dataset.
-If the answer to these questions is no, then we have orphan records and that may cause problems when building the star schema
+If the answer to these questions is no, then we have orphan records and that may cause problems when building the star schema.
+
+NOTE :
+It has come to our attention that there are some product_id values which are present in the order_items_dataset table but are missing in the products_dataset table.
+When we build the star schema without addressing this, we will have broken foreign keys(foreign keys in the fact table which cannot be tracked back to the dimension tables)
+THE SOLUTION
+We will the build the Product Dimension from All Referenced Products. Conceptually, we will LEFT JOIN the order_items_dataset(left table) and the products_dataset(right table) and the result output will be the staged Products_dataset table, by doing this we will have grabbed all the product_ids in the order_items_table and make sure they are also in the products_dataset table even though we dont have their descriptive information. This reflects a common ETL principle, "The fact table drives dimension completeness"; if a product appears in a sale, it deserves a row in the product dimension even if the descriptive information is unavailable.
+
+
+
+
+
+
+
+
+
