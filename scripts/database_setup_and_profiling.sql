@@ -200,11 +200,60 @@ GROUP BY product_id
 HAVING COUNT(*) > 1;
 
 SELECT
-seller_id,
-COUNT(*) occurrences
+  seller_id,
+  COUNT(*) occurrences
 FROM raw.olist_sellers_dataset
 GROUP BY seller_id
 HAVING COUNT(*) > 1;
 
 --Stage 3 : Referential Integrity
+SELECT
+  COUNT(*) orphan_records
+FROM raw.olist_orders_dataset o
+LEFT JOIN raw.olist_customers_dataset c
+ON o.customer_id = c.customer_id
+WHERE c.customer_id IS NULL; --returns 0, therefore no orphan records
+
+SELECT
+  COUNT(*) orphan_records
+FROM raw.olist_order_items_dataset i
+LEFT JOIN raw.olist_orders_dataset o
+ON i.order_id = o.order_id
+WHERE o.order_id IS NULL; --returns 0, therefore no orphan records
+
+SELECT
+  COUNT(*) orphan_records
+FROM raw.olist_order_reviews_dataset r
+LEFT JOIN raw.olist_orders_dataset o
+ON r.order_id = o.order_id
+WHERE o.order_id IS NULL; --returns 0, therefore no orphan records
+
+SELECT
+  COUNT(*) orphan_records
+FROM raw.olist_order_items_dataset i
+LEFT JOIN raw.olist_sellers_dataset s
+ON i.seller_id = s.seller_id
+WHERE s.seller_id IS NULL; --returns 0, therefore no orphan records
+
+SELECT
+  COUNT(*) orphan_records
+FROM raw.olist_order_items_dataset i
+LEFT JOIN raw.olist_products_dataset p
+ON i.product_id = p.product_id
+WHERE p.product_id IS NULL; --returns 34,445 rows.NOTE that this represents the number of affected rows in the order_items(34,445 order items records reference a product
+--that does not exist in the products_dataset table)
+--, but in those affected rows, some products were ordered more than once so we want also to find the distinct products which we dont have their records in the products table(most likely products which were removed
+--from the products catalog)
+
+SELECT
+  COUNT(DISTINCT i.product_id) missing_products
+FROM raw.olist_order_items_dataset i
+LEFT JOIN raw.olist_products_dataset p
+ON i.product_id = p.product_id
+WHERE p.product_id IS NULL; --returns 9999 rows, this means that 9999 unique products in the order_items_dataset table does not have a corresponding record in the 
+--products table (were most likely removed from the products catalog)
+
+
+
+
 
