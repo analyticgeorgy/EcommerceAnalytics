@@ -224,3 +224,37 @@ WHERE product_category_name = 'portateis_cozinha_e_preparadores_de_alimentos'
 UPDATE staging.olist_products_dataset
 SET product_category_name_english = 'pc_gamer'
 WHERE product_category_name = 'pc_gamer'
+
+SELECT
+COUNT(*) missing_translations
+FROM staging.olist_products_dataset
+WHERE product_category_name IS NOT NULL 
+AND product_category_name_english IS NULL
+
+--Now we move on to the staging orders_dataset table
+--Check Date Conversion
+--Here we verify whether the SQL Server can correct every timestamp correctly (checks for values that are not NULLs but will still cause problems while datatype casting/converting)
+--Any column that returns a value not 0 has an issue
+SELECT
+SUM(
+	CASE WHEN order_purchase_timestamp IS NOT NULL
+	AND TRY_CONVERT(DATETIME2, order_purchase_timestamp) IS NULL THEN 1 ELSE 0 END 
+) AS invalid_purchase,
+SUM(
+	CASE WHEN order_approved_at IS NOT NULL
+	AND TRY_CONVERT(DATETIME2, order_approved_at) IS NULL THEN 1 ELSE 0 END
+) AS invalid_approved,
+SUM(
+	CASE WHEN order_delivered_carrier_date IS NOT NULL
+	AND TRY_CONVERT(DATETIME2, order_delivered_carrier_date) IS NULL THEN 1 ELSE 0 END
+) AS invalid_carrier,
+SUM(
+	CASE WHEN order_delivered_customer_date IS NOT NULL
+	AND TRY_CONVERT(DATETIME2, order_delivered_customer_date) IS NULL THEN 1 ELSE 0 END
+) AS invalid_delivered,
+SUM(
+	CASE WHEN order_estimated_delivery_date IS NOT NULL
+	AND TRY_CONVERT(DATETIME2, order_estimated_delivery_date) IS NULL THEN 1 ELSE 0 END
+) AS invalid_estimated
+FROM raw.olist_orders_dataset
+
