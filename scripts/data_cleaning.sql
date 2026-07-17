@@ -258,3 +258,27 @@ SUM(
 ) AS invalid_estimated
 FROM raw.olist_orders_dataset
 
+--Load the data
+INSERT INTO staging.olist_orders_dataset
+(
+order_id,
+customer_id,
+order_status,
+order_purchase_timestamp,
+order_approved_at,
+order_delivered_carrier_date,
+order_delivered_customer_date,
+order_estimated_delivery_date
+)
+SELECT
+TRIM(order_id),
+TRIM(customer_id),
+TRIM(order_status),
+TRY_CONVERT(DATETIME2, order_purchase_timestamp),
+TRY_CONVERT(DATETIME2, order_approved_at),
+TRY_CONVERT(DATETIME2, order_delivered_carrier_date),
+TRY_CONVERT(DATETIME2, order_delivered_customer_date),
+TRY_CONVERT(DATETIME2, order_estimated_delivery_date)
+FROM raw.olist_orders_dataset
+
+
