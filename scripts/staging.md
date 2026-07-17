@@ -44,3 +44,8 @@ staging products from the product_category_name_translation).
 We will LEFT JOIN the products as the left table and product_category_name_translation as the right because some products may have NULL category names or categories that
 does not exist in the translation table, the use of a LEFT JOIN here ensures we keep every product and simply leave the product_category_english column as NULL where no
 translation exist.
+After joining the products_dataset and the product_category_translation we generate a query to see if there are missing translation records(products with no product_category
+names or products which have product_category_names that does not exist in the translation table)
+The total number of missing values is 453, but this includes all rows with no product_category_names and also those with products which their product_category_names are not
+accounted for in the translation table. After more digging in, we find that only 442 products have no category assigned(those ones we will leave as NULL cause it is a source system issue and we cant do anything about it) the other 11 products which have no translation we will decide to populate them in the translation table ourselves.
+We will look up their English names then insert them into the translation table and then update our staging products table.
