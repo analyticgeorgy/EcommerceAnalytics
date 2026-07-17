@@ -49,3 +49,6 @@ names or products which have product_category_names that does not exist in the t
 The total number of missing values is 453, but this includes all rows with no product_category_names and also those with products which their product_category_names are not
 accounted for in the translation table. After more digging in, we find that only 442 products have no category assigned(those ones we will leave as NULL cause it is a source system issue and we cant do anything about it) the other 11 products which have no translation we will decide to populate them in the translation table ourselves.
 We will look up their English names then insert them into the translation table and then update our staging products table.
+Now we have a total of 442 missing translation and we will leave it at that.
+
+
