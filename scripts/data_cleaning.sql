@@ -183,3 +183,44 @@ COUNT(*) missing_translations
 FROM staging.olist_products_dataset
 WHERE product_category_name IS NOT NULL
 AND product_category_name_english IS NULL
+
+SELECT
+product_category_name,
+COUNT(*) occurrences
+FROM staging.olist_products_dataset
+WHERE product_category_name_english IS NULL
+GROUP BY product_category_name
+ORDER BY occurrences DESC
+
+SELECT *
+FROM staging.product_category_name_translation
+WHERE product_category_name IN
+(
+'portateis_cozinha_e_preparadores_de_alimentos',
+'pc_gamer'
+);
+
+
+INSERT INTO staging.product_category_name_translation
+(
+product_category_name,
+product_category_name_english
+)
+VALUES('portateis_cozinha_e_preparadores_de_alimentos', 'portable kitchen appliances'),
+('pc_gamer', 'pc_gamer')
+
+SELECT *
+FROM staging.product_category_name_translation
+WHERE product_category_name IN
+(
+'portateis_cozinha_e_preparadores_de_alimentos',
+'pc_gamer'
+);
+
+UPDATE staging.olist_products_dataset
+SET product_category_name_english = 'portable kitchen appliances'
+WHERE product_category_name = 'portateis_cozinha_e_preparadores_de_alimentos'
+
+UPDATE staging.olist_products_dataset
+SET product_category_name_english = 'pc_gamer'
+WHERE product_category_name = 'pc_gamer'
