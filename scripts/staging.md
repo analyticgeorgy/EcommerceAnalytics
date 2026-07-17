@@ -37,3 +37,10 @@ as faithfully as possible.
 
 When changing the datatypes in the staging, we will opt to change data types of columns which dont need the universal unicode NVARCHAR to VARCHAR as NVARCHAR takes twice as 
 much space in the database.(NVARCHAR takes 2 bytes per character while VARCHAR takes 1 byte per character)
+
+Looking at the products_dataset table and the product_category_name_translation tables, I see an opportunity to immediately translate the Portuguese category names in 
+English, instead of carrying the Portuguese names all the way to Power BI, we can enrich the products data in staging.(We will add the product_category_names_english to the
+staging products from the product_category_name_translation).
+We will LEFT JOIN the products as the left table and product_category_name_translation as the right because some products may have NULL category names or categories that
+does not exist in the translation table, the use of a LEFT JOIN here ensures we keep every product and simply leave the product_category_english column as NULL where no
+translation exist.
