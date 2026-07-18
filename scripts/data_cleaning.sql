@@ -282,3 +282,202 @@ TRY_CONVERT(DATETIME2, order_estimated_delivery_date)
 FROM raw.olist_orders_dataset
 
 
+--Create the sellers_dataset staging table
+CREATE TABLE staging.olist_sellers_dataset
+(
+seller_id VARCHAR(100),
+seller_zip_code_prefix INT,
+seller_city NVARCHAR(50),
+seller_state VARCHAR(50)
+)
+
+--Load the data
+INSERT INTO staging.olist_sellers_dataset
+(seller_id, seller_zip_code_prefix, seller_city, seller_state)
+SELECT
+TRIM(seller_id),
+seller_zip_code_prefix,
+TRIM(seller_city),
+UPPER(TRIM(seller_state))
+FROM raw.olist_sellers_dataset
+
+--Validation
+--Row Count
+SELECT
+COUNT(*) total_rows
+FROM staging.olist_sellers_dataset
+
+--Check whether the candidate key is still unique
+SELECT
+seller_id,
+COUNT(*) occurrences
+FROM staging.olist_sellers_dataset
+GROUP BY seller_id
+HAVING COUNT(*) > 1
+
+
+--Create the order_payments_dataset staging table
+CREATE TABLE staging.olist_order_payments_dataset
+(
+order_id VARCHAR(50),
+payment_sequential INT,
+payment_type VARCHAR(50),
+payment_installments INT,
+payment_value DECIMAL(10,2)
+)
+
+--Load the data
+INSERT INTO staging.olist_order_payments_dataset
+(order_id, payment_sequential, payment_type, payment_installments, payment_value)
+SELECT
+TRIM(order_id),
+payment_sequential,
+TRIM(payment_type),
+payment_installments,
+payment_value
+FROM raw.olist_order_payments_dataset
+
+--Validation
+--Row Count
+SELECT
+COUNT(*) total_rows
+FROM staging.olist_order_payments_dataset
+
+--Check whether the composite candidate key is still unique
+SELECT
+order_id,
+payment_sequential,
+COUNT(*) occurrences
+FROM staging.olist_order_payments_dataset
+GROUP BY order_id, payment_sequential
+HAVING COUNT(*) > 1
+
+
+--Create order_reviews_dataset staging table
+CREATE TABLE staging.olist_order_reviews_dataset
+(
+review_id VARCHAR(100),
+order_id VARCHAR(100),
+review_score INT,
+review_comment_title NVARCHAR(50),
+review_comment_message NVARCHAR(256),
+review_creation_date DATETIME2,
+review_answer_timestamp DATETIME2
+)
+
+--Load the data
+INSERT INTO staging.olist_order_reviews_dataset
+(
+review_id,
+order_id,
+review_score,
+review_comment_title,
+review_comment_message,
+review_creation_date,
+review_answer_timestamp
+)
+SELECT
+TRIM(review_id),
+TRIM(order_id),
+review_score,
+TRIM(review_comment_title),
+TRIM(review_comment_message),
+review_creation_date,
+review_answer_timestamp
+FROM raw.olist_order_reviews_dataset
+
+--Validation
+--Row Count
+SELECT
+COUNT(*) total_rows
+FROM staging.olist_order_reviews_dataset
+
+
+--Create the geolocation_dataset staging table
+CREATE TABLE staging.olist_geolocation_dataset
+(
+geolocation_zip_code_prefix INT,
+geolocation_lat DECIMAL(9,2),
+geolocation_lng DECIMAL(9,2),
+geolocation_city NVARCHAR(50),
+geolocation_state VARCHAR(50)
+)
+
+--Load the data
+INSERT INTO staging.olist_geolocation_dataset
+(geolocation_zip_code_prefix, geolocation_lat, geolocation_lng, geolocation_city, geolocation_state)
+SELECT
+geolocation_zip_code_prefix,
+geolocation_lat,
+geolocation_lng,
+TRIM(geolocation_city),
+UPPER(TRIM(geolocation_state))
+FROM raw.olist_geolocation_dataset
+
+--Validation
+--Row Count
+SELECT
+COUNT(*) total_rows
+FROM staging.olist_geolocation_dataset
+
+
+--Create the order_items_dataset staging table
+--but first lets make sure the [shipping_limit_date] is valid and can be converted without any issues
+SELECT
+SUM(
+CASE WHEN shipping_limit_date IS NOT NULL AND TRY_CONVERT(DATETIME, shipping_limit_date) IS NULL THEN 1 ELSE 0 END
+) AS invalid_shipping_date
+FROM raw.olist_order_items_dataset
+--the above returns 0 meaning the shipping_limit_date is valid, now create the staging table
+
+CREATE TABLE staging.olist_order_items_dataset
+(
+order_id VARCHAR(100),
+order_item_id INT,
+product_id VARCHAR(100),
+seller_id VARCHAR(100),
+shipping_limit_date DATETIME2,
+price DECIMAL(10,2),
+freight_value DECIMAL(10,2)
+)
+
+--Load the data
+INSERT INTO staging.olist_order_items_dataset
+(
+order_id,
+order_item_id,
+product_id,
+seller_id,
+shipping_limit_date,
+price,
+freight_value
+)
+SELECT
+TRIM(order_id),
+order_item_id,
+TRIM(product_id),
+TRIM(seller_id),
+shipping_limit_date,
+price,
+freight_value
+FROM raw.olist_order_items_dataset
+
+--Validation
+--Row Count
+SELECT
+COUNT(*) total_rows
+FROM staging.olist_order_items_dataset
+
+--Check whether the composite candidate key is still unique
+SELECT
+order_id,
+order_item_id,
+COUNT(*) occurrences
+FROM staging.olist_order_items_dataset
+GROUP BY order_id, order_item_id
+HAVING COUNT(*) > 1
+
+
+
+
+
