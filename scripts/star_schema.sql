@@ -122,7 +122,50 @@ SELECT
 	customer_state
 FROM staging.olist_customers_dataset;
 
+--3.DimSeller
+CREATE TABLE warehouse.DimSeller
+(
+	seller_key INT IDENTITY(1,1) NOT NULL,
+	seller_id VARCHAR(100) NOT NULL,
+	seller_zip_code INT,
+	seller_city NVARCHAR(50),
+	seller_state NVARCHAR(50),
+		
+	CONSTRAINT PK_DimSeller PRIMARY KEY (seller_key)
+);
 
+INSERT INTO warehouse.DimSeller
+(
+	seller_id,
+	seller_zip_code,
+	seller_city,
+	seller_state
+)
+SELECT
+	seller_id,
+	seller_zip_code_prefix,
+	seller_city,
+	seller_state
+FROM staging.olist_sellers_dataset
+
+--Validation
+SELECT
+	COUNT(*) total_rows
+FROM warehouse.DimSeller
+
+--Surrogate key
+SELECT
+	MIN(seller_key) first_key,
+	MAX(seller_key) last_key
+FROM warehouse.DimSeller
+
+--Business key
+SELECT
+	seller_id,
+	COUNT(*) occurrences
+FROM warehouse.DimSeller
+GROUP BY seller_id
+HAVING COUNT(*) > 1
 
 
 
