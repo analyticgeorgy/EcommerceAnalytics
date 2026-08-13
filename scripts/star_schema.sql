@@ -1,3 +1,4 @@
+--1. DimDate
 SELECT
     MIN(order_purchase_timestamp) AS first_purchase_date,
     MAX(order_purchase_timestamp) AS last_purchase_date
@@ -91,6 +92,35 @@ FROM warehouse.DimDate d1
 JOIN warehouse.DimDate d2
 ON d2.date_key = d1.date_key + 1
 WHERE DATEDIFF(DAY, d1.full_date, d2.full_date) <> 1 --returns no rows meaning no days were skipped
+
+--2.DimCustomer
+CREATE TABLE warehouse.DimCustomer
+(
+	customer_key INT IDENTITY(1,1) NOT NULL,
+	customer_id VARCHAR(100) NOT NULL,
+	customer_unique_id VARCHAR(100) NOT NULL,
+	customer_zip_code INT,
+	customer_city NVARCHAR(50),
+	customer_state NVARCHAR(50),
+	
+	CONSTRAINT PK_DimCustomer PRIMARY KEY(customer_key)
+);
+
+INSERT INTO warehouse.DimCustomer
+(
+	customer_id,
+	customer_unique_id,
+	customer_zip_code,
+	customer_city,
+	customer_state
+)
+SELECT
+	customer_id,
+	customer_unique_id,
+	customer_zip_code_prefix,
+	customer_city,
+	customer_state
+FROM staging.olist_customers_dataset;
 
 
 
