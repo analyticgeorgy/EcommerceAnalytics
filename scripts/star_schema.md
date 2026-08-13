@@ -7,9 +7,26 @@ DimDate, DimCustomer, DimSeller, DimProduct, DimPaymentMethod, DimReview, FactSa
 -We will generate dates covering the complete period represented in the Olist data, rather than arbitrarily choosing dates.
 
 2.DimCustomer
+-This comes from the source table olist_customers_dataset.
  Business Key vs Surrogate Key
 -The customer_id column comes with the Olist dataset, this is the business key/source-system key. We dont want to use it as the primary key of our warehouse design. Instead
 we will create customer_key now this will be our surrogate key.
  Why bother with a surrogate key?
 -Suppose Olist changes how it identifies customers in a future source-system version, our warehouse can still maintain its own stable identifier.
 -It also gives us a clean integer key for relationships i.e FactSales.customer_key - DimCustomer.customer_key rather than joining large tables using long VARCHAR IDs.
+
+3. DimSeller
+-This comes from the source table olist_sellers_dataset.
+
+3.DimProduct
+-This comes from the source table olist_products_dataset. It is our most important dimension in this project.
+-This is where we'll finally resolve the 9,999 orphan product IDs we discovered.
+
+
+
+
+
+
+
+
+
