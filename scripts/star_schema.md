@@ -21,7 +21,14 @@ we will create customer_key now this will be our surrogate key.
 3.DimProduct
 -This comes from the source table olist_products_dataset. It is our most important dimension in this project.
 -This is where we'll finally resolve the 9,999 orphan product IDs we discovered.
-
+The correct warehouse solution is : Unknown Product Member
+-We will deliberately create one special product record having the following entries :
+   product_key = 0
+   product_id = 'UNKNOWN'
+   product_category_name_english = 'Unknown'
+-Then every order item/sale record whose product_id doesn't exist in the product dimension will point to : product_key = 0
+-This is much better than creating 9,999 fake products. We are basically saying, "We know a sale record occurred, but the source system did not provide enough information
+for us to identify the product."
 
 
 
