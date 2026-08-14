@@ -163,6 +163,12 @@ FROM raw.olist_products_dataset p
 LEFT JOIN staging.product_category_name_translation t
 ON p.product_category_name = t.product_category_name
 
+--Fix the 442 missed translations
+UPDATE staging.olist_products_dataset
+SET product_category_name_english = 'Unknown'
+WHERE product_category_name_english IS NULL;
+
+	
 --Validation
 --Row Count
 SELECT
