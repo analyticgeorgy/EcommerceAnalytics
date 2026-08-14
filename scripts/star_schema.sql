@@ -167,6 +167,77 @@ FROM warehouse.DimSeller
 GROUP BY seller_id
 HAVING COUNT(*) > 1
 
+--4.DimProduct
+CREATE TABLE warehouse.DimProduct
+(
+	product_key INT NOT NULL,
+	product_id VARCHAR(100) NOT NULL,
+	product_category_name VARCHAR(50),
+	product_name_length INT,
+	product_description_length INT,
+	product_photos_qty INT,
+	product_weight_g INT,
+	product_length_cm INT,
+	product_height_cm INT,
+	product_width_cm INT
+)
+
+--Load the special Unknown member record first
+INSERT INTO warehouse.DimProduct
+(
+	product_key,
+	product_id,
+	product_category_name,
+	product_name_length,
+	product_description_length,
+	product_photos_qty,
+	product_weight_g,
+	product_length_cm,
+	product_height_cm,
+	product_width_cm
+	)
+VALUES
+(
+	0,
+	'UNKNOWN',
+	'Unknown',
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+)
+
+--Load the other product records
+INSERT INTO warehouse.DimProduct
+(
+	product_key,
+	product_id,
+	product_category_name,
+	product_name_length,
+	product_description_length,
+	product_photos_qty,
+	product_weight_g,
+	product_length_cm,
+	product_height_cm,
+	product_width_cm
+)
+SELECT
+	ROW_NUMBER() OVER(ORDER BY product_id) AS product_key,
+	product_id,
+	product_category_name_english,
+	product_name_length,
+	product_description_length,
+	product_photos_qty,
+	product_weight_g,
+	product_length_cm,
+	product_height_cm,
+	product_width_cm
+FROM staging.olist_products_dataset
+
+
 
 
 
