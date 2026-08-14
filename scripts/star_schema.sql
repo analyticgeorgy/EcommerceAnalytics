@@ -237,9 +237,29 @@ SELECT
 	product_width_cm
 FROM staging.olist_products_dataset
 
+--Validation
+SELECT
+	COUNT(*) total_records
+FROM warehouse.DimProduct
 
+SELECT
+	MIN(product_key) minimum_key,
+	MAX(product_key) maximum_key
+FROM warehouse.DimProduct
 
+--Check the business key
+SELECT
+	product_id,
+	COUNT(*) AS occurrences
+FROM warehouse.DimProduct
+GROUP BY product_id
+HAVING COUNT(*) > 1
 
+--Check the 'Unknown' missing translations
+SELECT
+	COUNT(*) missing_translations
+FROM warehouse.DimProduct
+WHERE product_category_name = 'Unknown'
 
 
 
