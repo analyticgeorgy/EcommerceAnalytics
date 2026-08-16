@@ -261,6 +261,37 @@ SELECT
 FROM warehouse.DimProduct
 WHERE product_category_name = 'Unknown'
 
+--Important reports
+--Matched order items
+SELECT
+	COUNT(*) matched_order_items
+FROM staging.olist_order_items_dataset i
+INNER JOIN  warehouse.DimProduct p
+ON i.product_id = p.product_id
+
+--The number of distinct products having an order item and also included in the products catalog
+SELECT
+	COUNT(DISTINCT i.product_id) total_products
+FROM staging.olist_order_items_dataset i
+INNER JOIN warehouse.DimProduct p
+ON i.product_id = p.product_id
+
+--The number of distinct products having an order item  and not included in the products catalog
+SELECT
+	COUNT(DISTINCT i.product_id) total_products
+FROM staging.olist_order_items_dataset i
+LEFT JOIN warehouse.DimProduct p
+ON i.product_id = p.product_id
+WHERE p.product_id IS NULL
+
+--The number of orphan order items, rows in the order_items with no associating record in the product catalog
+SELECT
+	COUNT(*) orphan_order_items
+FROM staging.olist_order_items_dataset i
+LEFT JOIN warehouse.DimProduct p
+ON i.product_id = p.product_id
+WHERE p.product_id IS NULL
+
 
 
 
