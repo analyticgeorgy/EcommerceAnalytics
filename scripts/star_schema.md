@@ -30,6 +30,15 @@ The correct warehouse solution is : Unknown Product Member
 -This is much better than creating 9,999 fake products. We are basically saying, "We know a sale record occurred, but the source system did not provide enough information
 for us to identify the product."
 
+4.DimPaymentMethod
+Remember :
+          order_id - identifies the order
+          payment_sequential - identifies the payment occurrence within the order
+          payment_type - descriptive attribute
+          payment_value - measure
+-The payment_value being a measure, it will eventually go into the fact table.
+
+
 
 
 
