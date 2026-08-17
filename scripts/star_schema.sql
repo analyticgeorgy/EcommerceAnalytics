@@ -292,6 +292,38 @@ LEFT JOIN warehouse.DimProduct p
 ON i.product_id = p.product_id
 WHERE p.product_id IS NULL
 
+--5.DimPaymentMethod
+SELECT
+	payment_type,
+	COUNT(*) occurrences
+FROM staging.olist_order_payments_dataset
+GROUP BY payment_type
+ORDER BY occurrences DESC;
 
+--Create the DimPaymentMethod
+CREATE TABLE warehouse.DimPaymentMethod
+(
+	payment_key INT IDENTITY(1,1) NOT NULL,
+	payment_type VARCHAR(50) NOT NULL,
+
+	CONSTRAINT PK_DimPaymentMethod PRIMARY KEY (payment_key)
+)
+
+INSERT INTO warehouse.DimPaymentMethod (payment_type)
+SELECT
+	DISTINCT payment_type
+FROM staging.olist_order_payments_dataset
+
+--Validation
+SELECT
+	*
+FROM warehouse.DimPaymentMethod
+
+SELECT
+	payment_type,
+	COUNT(*) occurrences
+FROM warehouse.DimPaymentMethod
+GROUP BY payment_type
+HAVING COUNT(*) > 1
 
 
