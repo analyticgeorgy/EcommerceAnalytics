@@ -65,6 +65,10 @@ For example :
 
 -This means we have to be extremely careful when we eventually construct FactSales. We cant simply join order_items and order_payments without thinking about the grain, because an order with 3 order items and 2 payments could produce 3 * 2 = 6 rows.
 
+5.DimReview
+-Here, one order can have multiple reviews and one review can be associated with multiple different orders.
+Why does the same review_id occur multiple times?
+-A repeated review_id does not necessarily mean the records are duplicates, as each occurrence of a repeated review_id belongs to a different order_id
 
 
 
