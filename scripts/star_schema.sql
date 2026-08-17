@@ -326,4 +326,23 @@ FROM warehouse.DimPaymentMethod
 GROUP BY payment_type
 HAVING COUNT(*) > 1
 
+--5.DimReview
+	--Investigation
+SELECT
+    review_id,
+    COUNT(DISTINCT order_id) AS distinct_orders
+FROM staging.olist_order_reviews_dataset
+GROUP BY review_id
+HAVING COUNT(DISTINCT order_id) > 1
+ORDER BY distinct_orders DESC;
 
+SELECT
+    order_id,
+    COUNT(*) AS review_count,
+    COUNT(DISTINCT review_score) AS distinct_scores,
+    COUNT(DISTINCT review_comment_title) AS distinct_titles,
+    COUNT(DISTINCT review_comment_message) AS distinct_messages
+FROM staging.olist_order_reviews_dataset
+GROUP BY order_id
+HAVING COUNT(*) > 1
+ORDER BY review_count DESC;
