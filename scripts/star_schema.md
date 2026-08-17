@@ -35,8 +35,36 @@ Remember :
           order_id - identifies the order
           payment_sequential - identifies the payment occurrence within the order
           payment_type - descriptive attribute
+          payment_installments - describes the individual payment transaction/ characteristic of the payment transaction
           payment_value - measure
--The payment_value being a measure, it will eventually go into the fact table.
+-The payment_value being a measure, it will eventually go into the fact table. The payment_installments also belongs in the fact table cause it describes the individual
+payment transaction. Anything to do with transactional data, measure, events and foreign keys from the dimensions are in the fact table.
+-Before constructing the DimPaymentMethod we should investigate the following:
+   Summarize the rows by payment_type. (COUNT of all rows by payment_type)
+   Summarize the rows by payment_type and payment_installments. (COUNT of all rows by payment_type and payment_installments)
+-The important discovery is that payment_type and payment_installments has 32 distinct combinations (with credit_card with payment_installments upto 24) whereas 
+payment_type has 5 distinct combinations. So we need to decide the grain of the dimension.
+
+I RECOMMEND KEEPING THE DIMENSION AT PAYMENT METHOD LEVEL
+- I would not create for example : The different payment_type alongside the different payment_installments values as separate dimension members. Because payment_installments
+are a property of the individual payment transaction, not really a different payment method.
+-As illustrated before, the credit_card payment_type has payment_installments values of 0-24, all of this are still the same payment method Credit Card. Therefore, 
+DimPaymentMethod should have a grain of ONE ROW PER PAYMENT TYPE, leading to payment_installments being in the fact table.
+
+THERE'S ANOTHER ISSUE : PAYMENT GRAIN
+-Looking at our source table order_payments : order_id, payment_sequential, payment_type, payment_installments, payment_value. One order can have multiple payment records.
+For example : 
+ order_id = ABC123
+ payment_sequential = 1
+ payment_type = credit_card
+ payment_value = 100
+
+ payment_sequential = 2
+ payment_type = voucher
+ payment_value = 50
+
+-This means we have to be extremely careful when we eventually construct FactSales. We cant simply join order_items and order_payments without thinking about the grain, because an order with 3 order items and 2 payments could produce 3 * 2 = 6 rows.
+
 
 
 
