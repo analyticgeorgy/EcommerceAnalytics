@@ -328,21 +328,62 @@ HAVING COUNT(*) > 1
 
 --5.DimReview
 	--Investigation
+	
+--Test composite uniqueness
 SELECT
     review_id,
-    COUNT(DISTINCT order_id) AS distinct_orders
-FROM staging.olist_order_reviews_dataset
-GROUP BY review_id
-HAVING COUNT(DISTINCT order_id) > 1
-ORDER BY distinct_orders DESC;
-
-SELECT
     order_id,
-    COUNT(*) AS review_count,
-    COUNT(DISTINCT review_score) AS distinct_scores,
-    COUNT(DISTINCT review_comment_title) AS distinct_titles,
-    COUNT(DISTINCT review_comment_message) AS distinct_messages
+    COUNT(*) AS row_count
 FROM staging.olist_order_reviews_dataset
-GROUP BY order_id
-HAVING COUNT(*) > 1
-ORDER BY review_count DESC;
+GROUP BY review_id, order_id
+HAVING COUNT(*) > 1;
+
+-- Find exact duplicate records
+SELECT
+    review_id,
+    order_id,
+    review_score,
+    review_comment_title,
+    review_comment_message,
+    review_creation_date,
+    review_answer_timestamp,
+    COUNT(*) AS duplicate_count
+FROM staging.olist_order_reviews_dataset
+GROUP BY
+    review_id,
+    order_id,
+    review_score,
+    review_comment_title,
+    review_comment_message,
+    review_creation_date,
+    review_answer_timestamp
+HAVING COUNT(*) > 1;
+
+CREATE TABLE warehouse.DimReview(
+	review_key INT IDENTITY(1,1) NOT NULL,
+	review_id VARCHAR(50) NOT NULL,
+	order_id VARCHAR(50) NOT NULL,
+	review_score INT,
+	review_comment_title NVARCHAR(MAX),
+	review_comment_message NVARCHAR(MAX),
+	review_creation_date DATETIME2,
+	review_answer_timestamp DATETIME2
+)
+
+INSERT INTO warehouse.DimReview(
+	review_id,
+	order_id,
+	review_score,
+	review_comment_message,
+	review_creation_date,
+	review_answer_timestamp
+)
+SELECT
+	review_id,
+	order_id,
+	review_score,
+	review_comment_message,
+	review_creation_date,
+	review_answer_timestamp
+FROM staging.olist_order_reviews_dataset
+
