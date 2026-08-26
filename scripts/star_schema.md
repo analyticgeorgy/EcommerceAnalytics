@@ -68,7 +68,9 @@ For example :
 5.DimReview
 -Here, one order can have multiple reviews and one review can be associated with multiple different orders.
 Why does the same review_id occur multiple times?
--A repeated review_id does not necessarily mean the records are duplicates, as each occurrence of a repeated review_id belongs to a different order_id
+-A repeated review_id does not necessarily mean the records are duplicates, as each occurrence of a repeated review_id belongs to a different order_id. So we going to 
+create a surrogate key review key.
+
 
 
 
