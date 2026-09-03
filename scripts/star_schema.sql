@@ -390,3 +390,57 @@ FROM staging.olist_order_reviews_dataset
 --6.FactOrder
 --Before defining the DDL for the FactOrder we need to execute the sp_help stored procedure of DimCustomer and DimDate because the foreign key definitions need to match 
 --with the primary key ones
+EXEC sp_help 'warehouse.DimCustomer'
+EXEC sp_help 'warehouse.DimDate'
+
+CREATE TABLE warehouse.FactOrder(
+	order_key INT NOT NULL,
+	order_id VARCHAR(50) NOT NULL,
+	customer_key INT NOT NULL,
+	order_status VARCHAR(50),
+	purchase_date_key INT NOT NULL,
+	approved_date_key INT NOT NULL,
+	carrier_delivery_date_key INT NOT NULL,
+	customer_delivery_date_key INT NOT NULL,
+	estimated_delivery_date_key INT NOT NULL,
+	order_purchase_timestamp DATETIME2,
+	order_approved_at DATETIME2,
+	order_delivered_carrier_date DATETIME2,
+	order_delivered_customer_date DATETIME2,
+	order_estimated_delivery_date DATETIME2,
+	
+	CONSTRAINT PK_FactOrder
+	PRIMARY KEY (order_key),
+	
+	CONSTRAINT FK_FactOrder_DimCustomer
+	FOREIGN KEY (customer_key)
+	REFERENCES warehouse.DimCustomer (customer_key),
+	
+	CONSTRAINT FK_FactOrder_DimDatePurchase
+	FOREIGN KEY (purchase_date_key)
+	REFERENCES warehouse.DimDate (date_key),
+	
+	CONSTRAINT FK_FactOrder_DimDate_Approved
+	FOREIGN KEY (approved_date_key)
+	REFERENCES warehouse.DimDate (date_key),
+	
+	CONSTRAINT FK_FactOrder_DimDate_Carrier_Delivery
+	FOREIGN KEY (carrier_delivery_date_key)
+	REFERENCES warehouse.DimDate (date_key),
+	
+	CONSTRAINT FK_FactOrder_DimDate_Customer_Delivery
+	FOREIGN KEY (customer_delivery_date_key)
+	REFERENCES warehouse.DimDate (date_key),
+	
+	CONSTRAINT FK_FactOrder_DimDate_Estimated_Delivery
+	FOREIGN KEY (estimated_delivery_date_key)
+	REFERENCES warehouse.DimDate (date_key)
+
+)
+
+
+
+
+
+
+
