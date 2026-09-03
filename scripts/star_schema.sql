@@ -387,3 +387,6 @@ SELECT
 	review_answer_timestamp
 FROM staging.olist_order_reviews_dataset
 
+--6.FactOrder
+--Before defining the DDL for the FactOrder we need to execute the sp_help stored procedure of DimCustomer and DimDate because the foreign key definitions need to match 
+--with the primary key ones
