@@ -71,6 +71,10 @@ Why does the same review_id occur multiple times?
 -A repeated review_id does not necessarily mean the records are duplicates, as each occurrence of a repeated review_id belongs to a different order_id. So we going to 
 create a surrogate key review key.
 
+6.FactOrder
+-This will come from the olist_orders_dataset. Its grain is one row represents one customer order. It contains the order-level attributes. We cant just dump the order-level
+attributes into the FactOrderItems because that would be repeating the same information for every in an order, thus having a factless fact table FactOrder.
+
 
 
 
