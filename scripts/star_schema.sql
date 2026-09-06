@@ -394,7 +394,7 @@ EXEC sp_help 'warehouse.DimCustomer'
 EXEC sp_help 'warehouse.DimDate'
 
 CREATE TABLE warehouse.FactOrder(
-	order_key INT NOT NULL,
+	order_key INT IDENTITY(1,1 ) NOT NULL,
 	order_id VARCHAR(50) NOT NULL,
 	customer_key INT NOT NULL,
 	order_status VARCHAR(50),
@@ -437,6 +437,7 @@ CREATE TABLE warehouse.FactOrder(
 	REFERENCES warehouse.DimDate (date_key)
 
 )
+
 
 
 
