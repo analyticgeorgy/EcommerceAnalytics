@@ -75,8 +75,13 @@ create a surrogate key review key.
 -This will come from the olist_orders_dataset. Its grain is one row represents one customer order. It contains the order-level attributes. We cant just dump the order-level
 attributes into the FactOrderItems because that would be repeating the same information for every in an order, thus having a factless fact table FactOrder.
 -The raw orders table contains business/source keys and timestamps. The warehouse fact table replaces those source keys with warehouse surrogate keys and converts the timestamps into role-specific date foreign keys while preserving the original timestamps.
-
-
+NOTE : There is something that we missed out on in the staging layer about the olist_orders_dataset table, there are records having the following:
+ order_purchase_timestamp = 2018-04-28 19:25:00.0000000
+ order_approved_at = 2018-04-29 19:35:00.0000000
+ order_delivered_carrier_date = 1900-01-01 00:00:00.0000000
+ order_delivered_customer_date = 1900-01-01 00:00:00.0000000
+ order_estimated_delivery_date of 2018-05-09 00:00:00.0000000
+For a record like this, the order_delivered_carrier_date and order_delivered_customer_date have placeholder values cause in our case it doesn't make sense that a record is delivered on the 1st January of 1900, so we will be forced to set them to NULLs suggesting that we dont have an idea of when the orders were delivered.
 
 
 
