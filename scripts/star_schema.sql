@@ -393,6 +393,7 @@ FROM staging.olist_order_reviews_dataset
 EXEC sp_help 'warehouse.DimCustomer'
 EXEC sp_help 'warehouse.DimDate'
 
+--DDL
 CREATE TABLE warehouse.FactOrder(
 	order_key INT IDENTITY(1,1 ) NOT NULL,
 	order_id VARCHAR(50) NOT NULL,
@@ -437,6 +438,100 @@ CREATE TABLE warehouse.FactOrder(
 	REFERENCES warehouse.DimDate (date_key)
 
 )
+
+--Loading	
+INSERT INTO warehouse.FactOrder
+(
+order_id,
+customer_key,
+order_status,
+order_purchase_timestamp,
+order_approved_at,
+order_delivered_carrier_date,
+order_delivered_customer_date,
+order_estimated_delivery_date,
+purchase_date_key,
+approved_date_key,
+carrier_delivery_date_key,
+customer_delivery_date_key,
+estimated_delivery_date_key
+)
+SELECT
+    o.order_id,
+    dc.customer_key,
+    o.order_status,
+	order_purchase_timestamp,
+    CASE WHEN CAST(order_approved_at AS DATE) = '1900-01-01' THEN NULL
+    ELSE order_approved_at
+    END,
+    CASE WHEN CAST(order_delivered_carrier_date AS DATE) = '1900-01-01' THEN NULL
+    ELSE order_delivered_carrier_date
+    END,
+    CASE WHEN CAST(order_delivered_customer_date AS DATE) = '1900-01-01' THEN NULL
+    ELSE order_delivered_customer_date
+    END,
+    CASE WHEN CAST(order_estimated_delivery_date AS DATE) = '1900-01-01' THEN NULL
+    ELSE order_estimated_delivery_date
+    END,
+    dp.date_key AS purchase_date_key,
+    da.date_key AS approved_date_key,
+    cdd.date_key AS carrier_delivery_date_key,
+    dcd.date_key AS customer_delivery_date_key,
+    edd.date_key AS estimated_delivery_date_key    
+FROM staging.olist_orders_dataset o
+JOIN warehouse.DimCustomer dc
+ON o.customer_id = dc.customer_id
+JOIN warehouse.DimDate dp
+ON CAST(o.order_purchase_timestamp AS DATE) = dp.full_date
+LEFT JOIN warehouse.DimDate da
+ON CAST(o.order_approved_at AS DATE) = da.full_date
+LEFT JOIN warehouse.DimDate cdd
+ON CAST(o.order_delivered_carrier_date AS DATE) = cdd.full_date
+LEFT JOIN warehouse.DimDate dcd
+ON CAST(o.order_delivered_customer_date AS DATE) = dcd.full_date
+LEFT JOIN warehouse.DimDate edd
+ON CAST(o.order_estimated_delivery_date AS DATE) = edd.full_date
+--Validation
+	
+--Confirm the row count
+SELECT COUNT(*) AS fact_order_rows
+FROM warehouse.FactOrder; 
+
+--Confirm business key order_id is unique
+SELECT
+    order_id,
+    COUNT(*) AS occurrences
+FROM warehouse.FactOrder
+GROUP BY order_id
+HAVING COUNT(*) > 1;
+
+--Confirm the number of distinct orders
+SELECT COUNT(DISTINCT order_key) AS distinct_orders
+FROM warehouse.FactOrder;
+
+--Check the required customer key
+SELECT COUNT(*) AS missing_customer_keys
+FROM warehouse.FactOrder
+WHERE customer_key IS NULL;
+
+--Validate the date keys
+SELECT
+    SUM(CASE WHEN purchase_date_key IS NULL THEN 1 ELSE 0 END)
+        AS missing_purchase_date,
+
+    SUM(CASE WHEN approved_date_key IS NULL THEN 1 ELSE 0 END)
+        AS missing_approved_date,
+
+    SUM(CASE WHEN carrier_delivery_date_key IS NULL THEN 1 ELSE 0 END)
+        AS missing_carrier_delivery_date,
+
+    SUM(CASE WHEN customer_delivery_date_key IS NULL THEN 1 ELSE 0 END)
+        AS missing_customer_delivery_date,
+
+    SUM(CASE WHEN estimated_delivery_date_key IS NULL THEN 1 ELSE 0 END)
+        AS missing_estimated_delivery_date
+FROM warehouse.FactOrder;
+
 
 
 
