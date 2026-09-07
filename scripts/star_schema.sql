@@ -398,16 +398,16 @@ CREATE TABLE warehouse.FactOrder(
 	order_id VARCHAR(50) NOT NULL,
 	customer_key INT NOT NULL,
 	order_status VARCHAR(50),
-	purchase_date_key INT NOT NULL,
-	approved_date_key INT NOT NULL,
-	carrier_delivery_date_key INT NOT NULL,
-	customer_delivery_date_key INT NOT NULL,
-	estimated_delivery_date_key INT NOT NULL,
 	order_purchase_timestamp DATETIME2,
 	order_approved_at DATETIME2,
 	order_delivered_carrier_date DATETIME2,
 	order_delivered_customer_date DATETIME2,
 	order_estimated_delivery_date DATETIME2,
+	purchase_date_key INT NOT NULL,
+	approved_date_key INT NULL,
+	carrier_delivery_date_key INT NULL,
+	customer_delivery_date_key INT NULL,
+	estimated_delivery_date_key INT NULL,
 	
 	CONSTRAINT PK_FactOrder
 	PRIMARY KEY (order_key),
@@ -437,6 +437,8 @@ CREATE TABLE warehouse.FactOrder(
 	REFERENCES warehouse.DimDate (date_key)
 
 )
+
+
 
 
 
