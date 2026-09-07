@@ -82,7 +82,8 @@ NOTE : There is something that we missed out on in the staging layer about the o
  order_delivered_customer_date = 1900-01-01 00:00:00.0000000
  order_estimated_delivery_date of 2018-05-09 00:00:00.0000000
 For a record like this, the order_delivered_carrier_date and order_delivered_customer_date have placeholder values cause in our case it doesn't make sense that a record is delivered on the 1st January of 1900, so we will be forced to set them to NULLs suggesting that we dont have an idea of when the orders were delivered.
-
+Later on we come to see that not the only the two mentioned columns have the issue but also order_approved_at and order_estimated_delivery_date too so that means there are
+orders than were not approved, some didnt have the estimated_delivery_date (thus were filled with the placeholder 1900-01-01) they will be also changed to NULL.
 
 
 
