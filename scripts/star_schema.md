@@ -85,6 +85,11 @@ For a record like this, the order_delivered_carrier_date and order_delivered_cus
 Later on we come to see that not the only the two mentioned columns have the issue but also order_approved_at and order_estimated_delivery_date too so that means there are
 orders than were not approved, some didnt have the estimated_delivery_date (thus were filled with the placeholder 1900-01-01) they will be also changed to NULL.
 
+7.FactOrderItems
+-This will come from the olist_order_items_dataset. Its grain is one row represents one order item. Its grain is different with that of the FactOrder.
+For example we have an order_id of ORDER123, the FactOrder will have one row for that order, but FactOrderItems can have three rows, it is one order but different order items illustrated by the order_item_id column in the source.
+NOTE : Looking at the FactOrderItems we see that there is a total of 98,666 order records having atleast one order item thus being in the FactOrderItems table. But when we take a look at the FactOrder we see that there are 99,441 orders. This means that 775 orders have no corresponding order-item record in the order_items source.
+This is perfectly possible so we dont need to manufacture rows for them in the order items.
 
 
 
