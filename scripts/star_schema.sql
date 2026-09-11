@@ -180,6 +180,9 @@ CREATE TABLE warehouse.DimProduct
 	product_length_cm INT,
 	product_height_cm INT,
 	product_width_cm INT
+
+	CONSTRAINT PKDimProduct
+    PRIMARY KEY (product_key)
 )
 
 --Load the special Unknown member record first
@@ -532,9 +535,64 @@ SELECT
         AS missing_estimated_delivery_date
 FROM warehouse.FactOrder;
 
+--7.FactOrderItems
+--This is going to be our central transactional table. But before building it we need to check on something
+-- We have:
+-- 32,951 distinct product_id
+-- but earlier, during the DimProduct work, we encountered product IDs that were missing from the product source and therefore required the Unknown product handling.
+-- So before we create the fact, we need to determine:
+-- How many order_items reference products that actually exist in DimProduct, and how many don't?
 
+--Run the below query first to see the matched product rows and the unmatched product rows in the order_items table
+SELECT
+	COUNT(*) total_order_items,
+	SUM(
+		CASE WHEN p.product_key IS NOT NULL THEN 1
+		ELSE 0
+		END
+	) matched_products,
+	SUM(
+		CASE WHEN p.product_key IS NULL THEN 1
+		ELSE 0
+		END
+	) unmatched_products
+FROM staging.olist_order_items_dataset oi
+LEFT JOIN warehouse.DimProduct p
+ON oi.product_id = p.product_id
 
+--Now the DDL for the FactOrderItems
+CREATE TABLE warehouse.FactOrderItems
+(
+	order_item_key INT IDENTITY(1,1) NOT NULL,
+	order_id VARCHAR(100) NOT NULL,
+	order_item_id INT NOT NULL,
+	order_key INT NOT NULL,
+	product_key INT NOT NULL,
+	seller_key INT NOT NULL,
+	shipping_limit_date DATETIME2,
+	shipping_limit_date_key INT,
+	price DECIMAL(10,2),
+	freight_value DECIMAL(10,2)
 
+	CONSTRAINT PKFactOrderItems
+	PRIMARY KEY (order_item_key),
+	
+	CONSTRAINT FKFactOrder
+	FOREIGN KEY (order_key)
+	REFERENCES warehouse.FactOrder (order_key),
+	
+	CONSTRAINT FKDimProduct
+	FOREIGN KEY (product_key)
+	REFERENCES warehouse.DimProduct (product_key),
+	
+	CONSTRAINT FKDimSeller
+	FOREIGN KEY (seller_key)
+	REFERENCES warehouse.DimSeller (seller_key),
+	
+	CONSTRAINT FKDimDate
+	FOREIGN KEY (shipping_limit_date_key)
+	REFERENCES warehouse.DimDate (date_key)
+)
 
 
 
