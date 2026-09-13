@@ -90,7 +90,9 @@ orders than were not approved, some didnt have the estimated_delivery_date (thus
 For example we have an order_id of ORDER123, the FactOrder will have one row for that order, but FactOrderItems can have three rows, it is one order but different order items illustrated by the order_item_id column in the source.
 NOTE : Looking at the FactOrderItems we see that there is a total of 98,666 order records having atleast one order item thus being in the FactOrderItems table. But when we take a look at the FactOrder we see that there are 99,441 orders. This means that 775 orders have no corresponding order-item record in the order_items source.
 This is perfectly possible so we dont need to manufacture rows for them in the order items.
-
+When we take a look at the shipping_limit_date column in this table, we notice that there are no placeholder date values (1900-01-01) that existed in most of the date columns in the orders table so there is no need to transform any date value to NULL.
+NOTE : Remember that we fixed the 34,445 unmatched product rows in the order_items by introducing an Unknown product member setting its product key to 0, so when joining 
+       we must explicitly say for every unmatched product row, take the product_key to be 0.
 
 
 
