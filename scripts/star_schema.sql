@@ -627,7 +627,56 @@ ON oi.seller_id = ds.seller_id
 LEFT JOIN warehouse.DimDate dd
 ON CAST(oi.shipping_limit_date AS DATE) = dd.full_date
 
+--Validation
+	--Row count
+SELECT COUNT(*) AS fact_order_items_rows
+FROM warehouse.FactOrderItems;
 
+  --total rows, distinct_orders, distinct_order_items
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT order_id) AS distinct_orders,
+    COUNT(DISTINCT order_id + '-' + CAST(order_item_id AS VARCHAR(20)))
+        AS distinct_order_items
+FROM warehouse.FactOrderItems
+
+	--Check the Unknown Product Handling
+SELECT
+    product_key,
+    COUNT(*) AS row_count
+FROM warehouse.FactOrderItems
+GROUP BY product_key
+ORDER BY product_key;
+
+ --Validate the foreign key relationships
+--orders
+SELECT COUNT(*) AS invalid_order_keys
+FROM warehouse.FactOrderItems foi
+LEFT JOIN warehouse.FactOrder fo
+    ON foi.order_key = fo.order_key
+WHERE fo.order_key IS NULL;
+
+--products
+SELECT COUNT(*) AS invalid_product_keys
+FROM warehouse.FactOrderItems foi
+LEFT JOIN warehouse.DimProduct dp
+    ON foi.product_key = dp.product_key
+WHERE dp.product_key IS NULL;
+
+--sellers
+SELECT COUNT(*) AS invalid_seller_keys
+FROM warehouse.FactOrderItems foi
+LEFT JOIN warehouse.DimSeller ds
+    ON foi.seller_key = ds.seller_key
+WHERE ds.seller_key IS NULL;
+
+--shipping dates
+SELECT COUNT(*) AS invalid_shipping_date_keys
+FROM warehouse.FactOrderItems foi
+LEFT JOIN warehouse.DimDate dd
+    ON foi.shipping_limit_date_key = dd.date_key
+WHERE foi.shipping_limit_date_key IS NOT NULL
+  AND dd.date_key IS NULL;
 
 
 
