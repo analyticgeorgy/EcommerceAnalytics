@@ -594,6 +594,38 @@ CREATE TABLE warehouse.FactOrderItems
 	REFERENCES warehouse.DimDate (date_key)
 )
 
+--Loading the central transactional Fact table
+INSERT INTO warehouse.FactOrderItems
+(
+	order_id,
+	order_item_id,
+	order_key,
+	product_key,
+	seller_key,
+	shipping_limit_date,
+	shipping_limit_date_key,
+	price,
+	freight_value
+)
+SELECT
+	oi.order_id,
+	oi.order_item_id,
+	fo.order_key,
+	COALESCE(dp.product_key, 0) AS product_key,
+	ds.seller_key,
+	oi.shipping_limit_date,
+	dd.date_key AS shipping_limit_date_key,
+	oi.price,
+	oi.freight_value
+FROM staging.olist_order_items_dataset oi
+JOIN warehouse.FactOrder fo
+ON fo.order_id = oi.order_id
+LEFT JOIN warehouse.DimProduct dp
+ON oi.product_id = dp.product_id
+JOIN warehouse.DimSeller ds
+ON oi.seller_id = ds.seller_id
+LEFT JOIN warehouse.DimDate dd
+ON CAST(oi.shipping_limit_date AS DATE) = dd.full_date
 
 
 
